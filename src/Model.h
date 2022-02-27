@@ -31,6 +31,21 @@ protected:
 	ID3D11Buffer* vertex_buffer = nullptr;
 	ID3D11Buffer* index_buffer = nullptr;
 
+    ID3D11Buffer* mtl_buffer = nullptr;
+    struct MaterialBuffer
+	{
+		vec4f Ka;
+		vec4f Kd;
+		vec4f Ks;
+	};
+
+	Material mtl = Material();
+
+	void InitMaterialBuffer();
+
+	void UpdateMaterialBuffer(
+		vec4f Ka, vec4f Kd, vec4f Ks);
+
 public:
 
 	Model(
@@ -38,12 +53,14 @@ public:
 		ID3D11DeviceContext* dxdevice_context) 
 		:	dxdevice(dxdevice),
 			dxdevice_context(dxdevice_context)
-	{ }
+	{
+		mtl.Kd_texture_filename ="assets/textures/yroadcrossing.png";
+	}
 
 	//
 	// Abstract render method: must be implemented by derived classes
 	//
-	virtual void Render() const = 0;
+	virtual void Render() = 0;
 
 	//
 	// Destructor
@@ -52,12 +69,14 @@ public:
 	{ 
 		SAFE_RELEASE(vertex_buffer);
 		SAFE_RELEASE(index_buffer);
+		SAFE_RELEASE(mtl_buffer);
 	}
 };
 
 class QuadModel : public Model
 {
 	unsigned nbr_indices = 0;
+	
 
 public:
 
@@ -65,7 +84,9 @@ public:
 		ID3D11Device* dx3ddevice,
 		ID3D11DeviceContext* dx3ddevice_context);
 
-	virtual void Render() const;
+	
+
+	virtual void Render();
 
 	~QuadModel() { }
 };
@@ -89,6 +110,7 @@ class OBJModel : public Model
 		materials.insert(materials.end(), mtl_vec.begin(), mtl_vec.end());
 	}
 
+
 public:
 
 	OBJModel(
@@ -96,7 +118,7 @@ public:
 		ID3D11Device* dxdevice,
 		ID3D11DeviceContext* dxdevice_context);
 
-	virtual void Render() const;
+	virtual void Render();
 
 	~OBJModel();
 };

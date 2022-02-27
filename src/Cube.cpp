@@ -1,12 +1,6 @@
-//
-//  Model.cpp
-//
-//  CJ Gribel 2016, cjgribel@gmail.com
-//
+#include "Cube.h"
 
-#include "Model.h"
-
-QuadModel::QuadModel(
+CubeModel::CubeModel(
 	ID3D11Device* dxdevice,
 	ID3D11DeviceContext* dxdevice_context)
 	: Model(dxdevice, dxdevice_context)
@@ -16,15 +10,15 @@ QuadModel::QuadModel(
 	std::vector<Vertex> vertices;
 	std::vector<unsigned> indices;
 
-
+	// Populate the vertex array with 24 vertices
 	Vertex v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22, v23;
 	//1# - front
 	v0.Pos = { -0.5f, -0.5f, 0.5f };
-	v0.Normal = { 0  ,   0   , -1 };
+	v0.Normal = {  0  ,   0   , -1 };
 	v0.TexCoord = { 0, 0 };
 
 	v1.Pos = { 0.5f, -0.5f, 0.5f };
-	v1.Normal = { 0 ,    0  , -1 };
+	v1.Normal = {    0 ,    0  , -1 };
 	v1.TexCoord = { 0, 1 };
 
 	v2.Pos = { 0.5f, 0.5f, 0.5f };
@@ -39,9 +33,9 @@ QuadModel::QuadModel(
 
 	//2# bottom
 	v9.Pos = { -0.5f, -0.5f, 0.5f };
-	v9.Normal = { 0    ,   -1   ,  0 };
+	v9.Normal = { 0    ,   -1   ,  0};
 	v9.TexCoord = { 0, 0 };
-
+	
 	v11.Pos = { 0.5f, -0.5f, 0.5f };
 	v11.Normal = { 0    ,   -1   ,  0 };
 	v11.TexCoord = { 0, 1 };
@@ -58,11 +52,11 @@ QuadModel::QuadModel(
 
 	//3# -right
 	v10.Pos = { 0.5f, -0.5f, 0.5f };
-	v10.Normal = { 1 , 0     ,  0 };
+	v10.Normal = {   1 , 0     ,  0};
 	v10.TexCoord = { 0, 1 };
 
 	v12.Pos = { 0.5f, 0.5f, 0.5f };
-	v12.Normal = { 1 , 0    , 0 };
+	v12.Normal = {   1 , 0    , 0 };
 	v12.TexCoord = { 1, 1 };
 
 	v18.Pos = { 0.5f, -0.5f, -0.5f };
@@ -74,10 +68,10 @@ QuadModel::QuadModel(
 	v20.TexCoord = { 0 , 0 };
 
 
-
+	
 	//4# - left
 	v14.Pos = { -0.5f, 0.5f, 0.5f };
-	v14.Normal = { -1    , 0    ,  0 };
+	v14.Normal = { -1    , 0    ,  0};
 	v14.TexCoord = { 1, 1 };
 
 	v8.Pos = { -0.5, -0.5f, 0.5f };
@@ -98,7 +92,7 @@ QuadModel::QuadModel(
 	v15.Pos = { -0.5f, 0.5f, 0.5f };
 	v15.Normal = { /*0.5f */ 0  ,  1   , 0 };
 	v15.TexCoord = { 1, 0 };
-
+	
 	v13.Pos = { 0.5f, 0.5f, 0.5f };
 	v13.Normal = { /*0.5f */  0 , 1      , 0 };
 	v13.TexCoord = { 1, 1 };
@@ -115,11 +109,11 @@ QuadModel::QuadModel(
 
 	//6# -back
 	v4.Pos = { -0.5f, -0.5f, -0.5f };
-	v4.Normal = { 0  , 0     , 1 };
+	v4.Normal = {  0  , 0     , 1 };
 	v4.TexCoord = { 1 , 0 };
 
 	v5.Pos = { 0.5f, -0.5f, -0.5f };
-	v5.Normal = { 0  ,    0   , 1 };
+	v5.Normal = {   0  ,    0   , 1 };
 	v5.TexCoord = { 1, 1 };
 
 	v6.Pos = { 0.5f, 0.5f, -0.5f };
@@ -127,7 +121,7 @@ QuadModel::QuadModel(
 	v6.TexCoord = { 0 , 1 };
 
 	v7.Pos = { -0.5f, 0.5f, -0.5f };
-	v7.Normal = { 0  ,   0 , 1 };
+	v7.Normal = {  0  ,   0 , 1 };
 	v7.TexCoord = { 0, 0 };
 
 
@@ -214,21 +208,21 @@ QuadModel::QuadModel(
 	vbufferDesc.CPUAccessFlags = 0;
 	vbufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	vbufferDesc.MiscFlags = 0;
-	vbufferDesc.ByteWidth = (UINT)(vertices.size()*sizeof(Vertex));
+	vbufferDesc.ByteWidth = (UINT)(vertices.size() * sizeof(Vertex));
 	// Data resource
 	D3D11_SUBRESOURCE_DATA vdata;
 	vdata.pSysMem = &vertices[0];
 	// Create vertex buffer on device using descriptor & data
 	const HRESULT vhr = dxdevice->CreateBuffer(&vbufferDesc, &vdata, &vertex_buffer);
 	SETNAME(vertex_buffer, "VertexBuffer");
-    
+
 	//  Index array descriptor
 	D3D11_BUFFER_DESC ibufferDesc = { 0 };
 	ibufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	ibufferDesc.CPUAccessFlags = 0;
 	ibufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	ibufferDesc.MiscFlags = 0;
-	ibufferDesc.ByteWidth = (UINT)(indices.size()*sizeof(unsigned));
+	ibufferDesc.ByteWidth = (UINT)(indices.size() * sizeof(unsigned));
 	// Data resource
 	D3D11_SUBRESOURCE_DATA idata;
 	idata.pSysMem = &indices[0];
@@ -237,18 +231,10 @@ QuadModel::QuadModel(
 	SETNAME(index_buffer, "IndexBuffer");
 
 	nbr_indices = (unsigned int)indices.size();
-	InitMaterialBuffer();
-
-
-
-	HRESULT hr = LoadTextureFromFile(dxdevice, mtl.Kd_texture_filename.c_str(), &mtl.diffuse_texture);
-
 }
 
 
-
-
-void QuadModel::Render() 
+void CubeModel::Render()
 {
 	// Bind our vertex buffer
 	const UINT32 stride = sizeof(Vertex); //  sizeof(float) * 8;
@@ -260,162 +246,5 @@ void QuadModel::Render()
 
 	// Make the drawcall
 	dxdevice_context->DrawIndexed(nbr_indices, 0, 0);
-
-	dxdevice_context->PSSetConstantBuffers(1, 1, &mtl_buffer);
-	dxdevice_context->PSSetShaderResources(
-		0, // texture slot #
-		1, // bind just one buffer
-		&mtl.diffuse_texture.texture_SRV);
-
-	vec4f Ka = { 0, 0, 0, 1}, Kd = { 0, 0.5, 0, 1 }, Ks = { 1, 1, 1, 1 };
-	UpdateMaterialBuffer(Ka, Kd, Ks);
 }
 
-void Model::InitMaterialBuffer() {
-	D3D11_BUFFER_DESC MaterialBuffer_desc = { 0 };
-	MaterialBuffer_desc.Usage = D3D11_USAGE_DYNAMIC;
-	MaterialBuffer_desc.ByteWidth = sizeof(MaterialBuffer);
-	MaterialBuffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	MaterialBuffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	MaterialBuffer_desc.MiscFlags = 0;
-	MaterialBuffer_desc.StructureByteStride = 0;
-	const HRESULT hr = dxdevice->CreateBuffer(&MaterialBuffer_desc, nullptr, &mtl_buffer);
-}
-
-void Model::UpdateMaterialBuffer(
-	vec4f Ka, vec4f Kd, vec4f Ks)
-{
-	D3D11_MAPPED_SUBRESOURCE resource;
-	dxdevice_context->Map(mtl_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
-	MaterialBuffer* mtlBuffer_ = (MaterialBuffer*)resource.pData;
-	mtlBuffer_->Ka = Ka;
-	mtlBuffer_->Kd = Kd;
-	mtlBuffer_->Ks = Ks;
-	dxdevice_context->Unmap(mtl_buffer, 0);
-}
-
-OBJModel::OBJModel(
-	const std::string& objfile,
-	ID3D11Device* dxdevice,
-	ID3D11DeviceContext* dxdevice_context)
-	: Model(dxdevice, dxdevice_context)
-{
-	// Load the OBJ
-	OBJLoader* mesh = new OBJLoader();
-	mesh->Load(objfile);
-
-	// Load and organize indices in ranges per drawcall (material)
-
-	std::vector<unsigned> indices;
-	unsigned int i_ofs = 0;
-
-	for (auto& dc : mesh->drawcalls)
-	{
-		// Append the drawcall indices
-		for (auto& tri : dc.tris)
-			indices.insert(indices.end(), tri.vi, tri.vi + 3);
-
-		// Create a range
-		unsigned int i_size = (unsigned int)dc.tris.size() * 3;
-		int mtl_index = dc.mtl_index > -1 ? dc.mtl_index : -1;
-		index_ranges.push_back({ i_ofs, i_size, 0, mtl_index });
-
-		i_ofs = (unsigned int)indices.size();
-	}
-
-	// Vertex array descriptor
-	D3D11_BUFFER_DESC vbufferDesc = { 0 };
-	vbufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vbufferDesc.CPUAccessFlags = 0;
-	vbufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	vbufferDesc.MiscFlags = 0;
-	vbufferDesc.ByteWidth = (UINT)(mesh->vertices.size()*sizeof(Vertex));
-	// Data resource
-	D3D11_SUBRESOURCE_DATA vdata;
-	vdata.pSysMem = &(mesh->vertices)[0];
-	// Create vertex buffer on device using descriptor & data
-	HRESULT vhr = dxdevice->CreateBuffer(&vbufferDesc, &vdata, &vertex_buffer);
-	SETNAME(vertex_buffer, "VertexBuffer");
-    
-	// Index array descriptor
-	D3D11_BUFFER_DESC ibufferDesc = { 0 };
-	ibufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	ibufferDesc.CPUAccessFlags = 0;
-	ibufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	ibufferDesc.MiscFlags = 0;
-	ibufferDesc.ByteWidth = (UINT)(indices.size()*sizeof(unsigned));
-	// Data resource
-	D3D11_SUBRESOURCE_DATA idata;
-	idata.pSysMem = &indices[0];
-	// Create index buffer on device using descriptor & data
-	HRESULT ihr = dxdevice->CreateBuffer(&ibufferDesc, &idata, &index_buffer);
-	SETNAME(index_buffer, "IndexBuffer");
-    
-	// Copy materials from mesh
-	append_materials(mesh->materials);
-
-	// Go through materials and load textures (if any) to device
-	std::cout << "Loading textures..." << std::endl;
-	for (auto& mtl : materials)
-	{
-		HRESULT hr;
-
-		// Load Diffuse texture
-		//
-		if (mtl.Kd_texture_filename.size()) {
-
-			hr = LoadTextureFromFile(
-				dxdevice,
-				dxdevice_context,
-				mtl.Kd_texture_filename.c_str(), 
-				&mtl.diffuse_texture);
-			std::cout << "\t" << mtl.Kd_texture_filename 
-				<< (SUCCEEDED(hr) ? " - OK" : "- FAILED") << std::endl;
-		}
-
-		// + other texture types here - see Material class
-		// ...
-
-
-
-	}
-	std::cout << "Done." << std::endl;
-
-	SAFE_DELETE(mesh);
-}
-
-
-void OBJModel::Render() 
-{
-	// Bind vertex buffer
-	const UINT32 stride = sizeof(Vertex);
-	const UINT32 offset = 0;
-	dxdevice_context->IASetVertexBuffers(0, 1, &vertex_buffer, &stride, &offset);
-
-	// Bind index buffer
-	dxdevice_context->IASetIndexBuffer(index_buffer, DXGI_FORMAT_R32_UINT, 0);
-
-	// Iterate drawcalls
-	for (auto& irange : index_ranges)
-	{
-		// Fetch material
-		const Material& mtl = materials[irange.mtl_index];
-
-		// Bind diffuse texture to slot t0 of the PS
-		dxdevice_context->PSSetShaderResources(0, 1, &mtl.diffuse_texture.texture_SRV);
-		// + bind other textures here, e.g. a normal map, to appropriate slots
-
-		// Make the drawcall
-		dxdevice_context->DrawIndexed(irange.size, irange.start, 0);
-	}
-}
-
-OBJModel::~OBJModel()
-{
-	for (auto& material : materials)
-	{
-		SAFE_RELEASE(material.diffuse_texture.texture_SRV);
-
-		// Release other used textures ...
-	}
-}

@@ -8,6 +8,7 @@
 #include "Camera.h"
 #include "Model.h"
 #include "Texture.h"
+#include "Cube.h"
 
 // New files
 // Material
@@ -56,7 +57,7 @@ class OurTestScene : public Scene
 	// CBuffer for transformation matrices
 	ID3D11Buffer* transformation_buffer = nullptr;
 	// + other CBuffers
-
+	ID3D11Buffer* lightcam_buffer = nullptr;
 	// 
 	// CBuffer client-side definitions
 	// These must match the corresponding shader definitions 
@@ -69,22 +70,35 @@ class OurTestScene : public Scene
 		mat4f ProjectionMatrix;
 	};
 
+	struct LightcamBuffer
+	{
+		vec4f CameraPosition;
+		vec4f LightPosition;
+	};
+
 	//
 	// Scene content
 	//
 	Camera* camera;
 
-	QuadModel* quad;
+	QuadModel* cube;
+	QuadModel* cube2;
+	QuadModel* cube3;
 	OBJModel* sponza;
 
 	// Model-to-world transformation matrices
 	mat4f Msponza;
-	mat4f Mquad;
+	mat4f Mcube;
+	mat4f Mcube2;
+	mat4f Mcube3;
 
 	// World-to-view matrix
 	mat4f Mview;
 	// Projection matrix
 	mat4f Mproj;
+
+	vec4f Vcam;
+	vec4f Vlight;
 
 	// Misc
 	float angle = 0;			// A per-frame updated rotation angle (radians)...
@@ -98,6 +112,12 @@ class OurTestScene : public Scene
 		mat4f ModelToWorldMatrix,
 		mat4f WorldToViewMatrix,
 		mat4f ProjectionMatrix);
+
+	void InitLightcamBuffer();
+
+	void UpdateLightcamBuffer(
+		vec4f CameraPosition,
+	    vec4f LightPosition);
 
 public:
 	OurTestScene(
