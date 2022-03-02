@@ -62,6 +62,8 @@ class OurTestScene : public Scene
 	// CBuffer client-side definitions
 	// These must match the corresponding shader definitions 
 	//
+	ID3D11SamplerState* sampler;
+
 
 	struct TransformationBuffer
 	{

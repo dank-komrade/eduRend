@@ -36,7 +36,7 @@ float4 PS_main(PSIn input) : SV_Target
     float3 N = input.Normal;
 	float3 R = reflect(-L, N);
 	float3 V = normalize(CameraPosition.xyz - input.PosWorld);
-    return float4(Ka + (texDiffuse.Sample(texSampler, input.TexCoord) * max(dot(L ,N), 0)) + Ks* pow(max(dot(R, V), 0), 100));
+    return float4(Ka + (texDiffuse.Sample(texSampler, input.TexCoord) * max(dot(L ,N), 0)) + Ks* pow(max(dot(R, V), 0), 90));
 
 	/*return texDiffuse.Sample(texSampler, input.TexCoord);*/
 

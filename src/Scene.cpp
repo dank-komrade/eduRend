@@ -88,9 +88,9 @@ void OurTestScene::Update(
 
 	Mcube = mat4f::translation(0, 2.5f, 0) * mat4f::rotation(-angle, 0.0f, -1.0f, 0.0f) * mat4f::scaling(1, 1, 1);
 
-	Mcube2 = Mcube * mat4f::translation(2, 0, 0) * mat4f::rotation(-angle * 2, 0.0f, 1.0f, 0.0f) * mat4f::scaling(0.5, 0.5, 0.5);
+	Mcube2 = Mcube * mat4f::translation(2, 0, 0) * mat4f::rotation(-angle / 2, 0.0f, 1.0f, 0.0f) * mat4f::scaling(0.5, 0.5, 0.5);
 
-	Mcube3 = Mcube2 * mat4f::translation(3, -1.5f, 0) * mat4f::rotation(-angle, 0.0f, -1.0f, 0.0f) * mat4f::scaling(0.5, 0.5, 0.5);
+	Mcube3 = Mcube2 * mat4f::translation(3, -1.5f, 0) * mat4f::rotation(-angle / 2, 0.0f, -1.0f, 0.0f) * mat4f::scaling(0.5, 0.5, 0.5);
 	// Sponza model-to-world transformation
 	Msponza = mat4f::translation(0, -5, 0) *		 // Move down 5 units
 		mat4f::rotation(fPI / 2, 0.0f, 1.0f, 0.0f) * // Rotate pi/2 radians (90 degrees) around y
@@ -104,9 +104,25 @@ void OurTestScene::Update(
 	if (fps_cooldown < 0.0)
 	{
 		std::cout << "fps " << (int)(1.0f / dt) << std::endl;
-//		printf("fps %i\n", (int)(1.0f / dt));
+        //		printf("fps %i\n", (int)(1.0f / dt));
 		fps_cooldown = 2.0;
 	}
+
+	D3D11_SAMPLER_DESC samplerdesc =
+	{
+	D3D11_FILTER_ANISOTROPIC,  // Filter
+	D3D11_TEXTURE_ADDRESS_WRAP, // AddressU
+	D3D11_TEXTURE_ADDRESS_WRAP, // AddressV
+	D3D11_TEXTURE_ADDRESS_CLAMP, // AddressW
+	0.0f, // MipLODBias
+	16, // MaxAnisotropy
+	D3D11_COMPARISON_NEVER, // ComapirsonFunc
+	{ 1.0f, 1.0f, 1.0f, 1.0f }, // BorderColor
+	-FLT_MAX, // MinLOD
+	FLT_MAX, // MaxLOD
+	};
+
+	dxdevice->CreateSamplerState(&samplerdesc, &sampler);
 }
 
 //
@@ -118,6 +134,12 @@ void OurTestScene::Render()
 	dxdevice_context->VSSetConstantBuffers(0, 1, &transformation_buffer);
 
 	dxdevice_context->PSSetConstantBuffers(0, 1, &lightcam_buffer);
+
+	dxdevice_context->PSSetSamplers(
+		0, // slot #
+		1, // number of samplers to bind (1)
+		&sampler);
+
 	// Obtain the matrices needed for rendering from the camera
 	Mview = camera->get_WorldToViewMatrix();
 	Mproj = camera->get_ProjectionMatrix();
@@ -152,6 +174,8 @@ void OurTestScene::Release()
 
 	SAFE_RELEASE(transformation_buffer);
 	SAFE_RELEASE(lightcam_buffer);
+
+	SAFE_RELEASE(sampler);
 	// + release other CBuffers
 }
 
@@ -217,3 +241,4 @@ void OurTestScene::UpdateLightcamBuffer(
 	lightcamBuffer_->LightPosition = LightPosition;
 	dxdevice_context->Unmap(lightcam_buffer, 0);
 }
+

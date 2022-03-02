@@ -240,11 +240,10 @@ QuadModel::QuadModel(
 	InitMaterialBuffer();
 
 
+	HRESULT hr = LoadTextureFromFile(dxdevice, dxdevice_context, mtl.Kd_texture_filename.c_str(), &mtl.diffuse_texture);
 
-	HRESULT hr = LoadTextureFromFile(dxdevice, mtl.Kd_texture_filename.c_str(), &mtl.diffuse_texture);
 
 }
-
 
 
 
@@ -267,7 +266,7 @@ void QuadModel::Render()
 		1, // bind just one buffer
 		&mtl.diffuse_texture.texture_SRV);
 
-	vec4f Ka = { 0, 0, 0, 1}, Kd = { 0, 0.5, 0, 1 }, Ks = { 1, 1, 1, 1 };
+	vec4f Ka = { 0.1, 0.1, 0.1, 1}, Kd = { 0, 0.5, 0, 1 }, Ks = { 1, 1, 1, 1 };
 	UpdateMaterialBuffer(Ka, Kd, Ks);
 }
 

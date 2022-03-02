@@ -46,6 +46,15 @@ protected:
 	void UpdateMaterialBuffer(
 		vec4f Ka, vec4f Kd, vec4f Ks);
 
+	void compute_TB(vertex_t& v0, vertex_t& v1, vertex_t& v2)
+	{
+		vec3f tangent, binormal;
+		// TODO: compute the 'tangent' and 'binormal' vectors
+		//       using Lengyel’s method, as given in lecture
+		// Now assign the newly computed vectors to the vertices
+		v0.Tangent = v1.Tangent = v2.Tangent = tangent;
+		v0.Binormal = v1.Binormal = v2.Binormal = binormal;
+	}
 public:
 
 	Model(
@@ -61,7 +70,6 @@ public:
 	// Abstract render method: must be implemented by derived classes
 	//
 	virtual void Render() = 0;
-
 	//
 	// Destructor
 	//
