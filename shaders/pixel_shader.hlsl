@@ -1,4 +1,6 @@
 SamplerState texSampler : register(s0);
+SamplerState normalSampler : register(s1);
+
 Texture2D texDiffuse : register(t0);
 
 cbuffer LightcamBuffer : register(b0)
@@ -10,8 +12,8 @@ cbuffer LightcamBuffer : register(b0)
 cbuffer MaterialBuffer : register(b1)
 {
 	float4 Ka;
-	float4 Kd; 
-	float4 Ks; 
+	float4 Kd;
+	float4 Ks;
 };
 
 struct PSIn
@@ -20,7 +22,10 @@ struct PSIn
 	float3 Normal : NORMAL;
 	float2 TexCoord : TEX;
 	float3 PosWorld : POSITION;
+	float3 Tangent : TANGENT;
+	float3 Binormal : BINORMAL;
 };
+
 
 //-----------------------------------------------------------------------------------------
 // Pixel Shader
@@ -32,14 +37,15 @@ float4 PS_main(PSIn input) : SV_Target
 	// The 4:th component is opacity and should be = 1
 
 	//return float4(input.Normal*0.5+0.5, 1);
-	float3 L = normalize(LightPosition.xyz - input.PosWorld); 
-    float3 N = input.Normal;
+
+	float3 L = normalize(LightPosition.xyz - input.PosWorld);
+	float3 N = input.Normal;
 	float3 R = reflect(-L, N);
 	float3 V = normalize(CameraPosition.xyz - input.PosWorld);
-    return float4(Ka + (texDiffuse.Sample(texSampler, input.TexCoord) * max(dot(L ,N), 0)) + Ks* pow(max(dot(R, V), 0), 90));
+	//return float4(Ka + (texDiffuse.Sample(texSampler, input.TexCoord) * max(dot(L ,N), 0)) + Ks* pow(max(dot(R, V), 0), 90));
 
 	/*return texDiffuse.Sample(texSampler, input.TexCoord);*/
 
 	// Debug shading #2: map and return texture coordinates as a color (blue = 0)
-//	return float4(input.TexCoord, 0, 1);
+	return float4(input.Normal, 1);
 }

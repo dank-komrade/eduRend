@@ -214,21 +214,21 @@ QuadModel::QuadModel(
 	vbufferDesc.CPUAccessFlags = 0;
 	vbufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	vbufferDesc.MiscFlags = 0;
-	vbufferDesc.ByteWidth = (UINT)(vertices.size()*sizeof(Vertex));
+	vbufferDesc.ByteWidth = (UINT)(vertices.size() * sizeof(Vertex));
 	// Data resource
 	D3D11_SUBRESOURCE_DATA vdata;
 	vdata.pSysMem = &vertices[0];
 	// Create vertex buffer on device using descriptor & data
 	const HRESULT vhr = dxdevice->CreateBuffer(&vbufferDesc, &vdata, &vertex_buffer);
 	SETNAME(vertex_buffer, "VertexBuffer");
-    
+
 	//  Index array descriptor
 	D3D11_BUFFER_DESC ibufferDesc = { 0 };
 	ibufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	ibufferDesc.CPUAccessFlags = 0;
 	ibufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	ibufferDesc.MiscFlags = 0;
-	ibufferDesc.ByteWidth = (UINT)(indices.size()*sizeof(unsigned));
+	ibufferDesc.ByteWidth = (UINT)(indices.size() * sizeof(unsigned));
 	// Data resource
 	D3D11_SUBRESOURCE_DATA idata;
 	idata.pSysMem = &indices[0];
@@ -247,7 +247,7 @@ QuadModel::QuadModel(
 
 
 
-void QuadModel::Render() 
+void QuadModel::Render()
 {
 	// Bind our vertex buffer
 	const UINT32 stride = sizeof(Vertex); //  sizeof(float) * 8;
@@ -266,7 +266,7 @@ void QuadModel::Render()
 		1, // bind just one buffer
 		&mtl.diffuse_texture.texture_SRV);
 
-	vec4f Ka = { 0.1, 0.1, 0.1, 1}, Kd = { 0, 0.5, 0, 1 }, Ks = { 1, 1, 1, 1 };
+	vec4f Ka = { 0.1, 0.1, 0.1, 1 }, Kd = { 0, 0.5, 0, 1 }, Ks = { 1, 1, 1, 1 };
 	UpdateMaterialBuffer(Ka, Kd, Ks);
 }
 
@@ -312,7 +312,38 @@ OBJModel::OBJModel(
 	{
 		// Append the drawcall indices
 		for (auto& tri : dc.tris)
+		{
 			indices.insert(indices.end(), tri.vi, tri.vi + 3);
+
+			auto& v0 = mesh->vertices[tri.vi[0]];
+			auto& v1 = mesh->vertices[tri.vi[1]];
+			auto& v2 = mesh->vertices[tri.vi[2]];
+
+			vec3f D = v1.Pos - v0.Pos;
+			vec3f E = v2.Pos - v0.Pos;
+			vec2f F = v1.TexCoord - v0.TexCoord;
+			vec2f G = v2.TexCoord - v0.TexCoord;
+
+			float detInverse = 1.0f / (F.x * G.y - F.y * G.x);
+
+			vec3f T, B;
+
+			T.x = (G.y * D.x - F.y * E.x) * detInverse;
+			T.y = (G.y * D.y - F.y * E.y) * detInverse;
+			T.z = (G.y * D.z - F.y * E.z) * detInverse;
+
+			B.x = (-G.x * D.x + F.x * E.x) * detInverse;
+			B.y = (-G.x * D.y + F.x * E.y) * detInverse;
+			B.z = (-G.x * D.z + F.x * E.z) * detInverse;
+
+			T = normalize(T);
+			B = normalize(B);
+
+			v0.Tangent = v1.Tangent = v2.Tangent = T;
+			v0.Binormal = v1.Binormal = v2.Binormal = B;
+
+
+		}
 
 		// Create a range
 		unsigned int i_size = (unsigned int)dc.tris.size() * 3;
@@ -322,34 +353,36 @@ OBJModel::OBJModel(
 		i_ofs = (unsigned int)indices.size();
 	}
 
+
+
 	// Vertex array descriptor
 	D3D11_BUFFER_DESC vbufferDesc = { 0 };
 	vbufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vbufferDesc.CPUAccessFlags = 0;
 	vbufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	vbufferDesc.MiscFlags = 0;
-	vbufferDesc.ByteWidth = (UINT)(mesh->vertices.size()*sizeof(Vertex));
+	vbufferDesc.ByteWidth = (UINT)(mesh->vertices.size() * sizeof(Vertex));
 	// Data resource
 	D3D11_SUBRESOURCE_DATA vdata;
 	vdata.pSysMem = &(mesh->vertices)[0];
 	// Create vertex buffer on device using descriptor & data
 	HRESULT vhr = dxdevice->CreateBuffer(&vbufferDesc, &vdata, &vertex_buffer);
 	SETNAME(vertex_buffer, "VertexBuffer");
-    
+
 	// Index array descriptor
 	D3D11_BUFFER_DESC ibufferDesc = { 0 };
 	ibufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	ibufferDesc.CPUAccessFlags = 0;
 	ibufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	ibufferDesc.MiscFlags = 0;
-	ibufferDesc.ByteWidth = (UINT)(indices.size()*sizeof(unsigned));
+	ibufferDesc.ByteWidth = (UINT)(indices.size() * sizeof(unsigned));
 	// Data resource
 	D3D11_SUBRESOURCE_DATA idata;
 	idata.pSysMem = &indices[0];
 	// Create index buffer on device using descriptor & data
 	HRESULT ihr = dxdevice->CreateBuffer(&ibufferDesc, &idata, &index_buffer);
 	SETNAME(index_buffer, "IndexBuffer");
-    
+
 	// Copy materials from mesh
 	append_materials(mesh->materials);
 
@@ -366,9 +399,9 @@ OBJModel::OBJModel(
 			hr = LoadTextureFromFile(
 				dxdevice,
 				dxdevice_context,
-				mtl.Kd_texture_filename.c_str(), 
+				mtl.Kd_texture_filename.c_str(),
 				&mtl.diffuse_texture);
-			std::cout << "\t" << mtl.Kd_texture_filename 
+			std::cout << "\t" << mtl.Kd_texture_filename
 				<< (SUCCEEDED(hr) ? " - OK" : "- FAILED") << std::endl;
 		}
 
@@ -384,7 +417,7 @@ OBJModel::OBJModel(
 }
 
 
-void OBJModel::Render() 
+void OBJModel::Render()
 {
 	// Bind vertex buffer
 	const UINT32 stride = sizeof(Vertex);

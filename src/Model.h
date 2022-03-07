@@ -31,8 +31,8 @@ protected:
 	ID3D11Buffer* vertex_buffer = nullptr;
 	ID3D11Buffer* index_buffer = nullptr;
 
-    ID3D11Buffer* mtl_buffer = nullptr;
-    struct MaterialBuffer
+	ID3D11Buffer* mtl_buffer = nullptr;
+	struct MaterialBuffer
 	{
 		vec4f Ka;
 		vec4f Kd;
@@ -46,24 +46,16 @@ protected:
 	void UpdateMaterialBuffer(
 		vec4f Ka, vec4f Kd, vec4f Ks);
 
-	void compute_TB(vertex_t& v0, vertex_t& v1, vertex_t& v2)
-	{
-		vec3f tangent, binormal;
-		// TODO: compute the 'tangent' and 'binormal' vectors
-		//       using Lengyel’s method, as given in lecture
-		// Now assign the newly computed vectors to the vertices
-		v0.Tangent = v1.Tangent = v2.Tangent = tangent;
-		v0.Binormal = v1.Binormal = v2.Binormal = binormal;
-	}
+
 public:
 
 	Model(
-		ID3D11Device* dxdevice, 
-		ID3D11DeviceContext* dxdevice_context) 
-		:	dxdevice(dxdevice),
-			dxdevice_context(dxdevice_context)
+		ID3D11Device* dxdevice,
+		ID3D11DeviceContext* dxdevice_context)
+		: dxdevice(dxdevice),
+		dxdevice_context(dxdevice_context)
 	{
-		mtl.Kd_texture_filename ="assets/textures/yroadcrossing.png";
+		mtl.Kd_texture_filename = "assets/textures/floor_diffuse.jpg";
 	}
 
 	//
@@ -74,7 +66,7 @@ public:
 	// Destructor
 	//
 	virtual ~Model()
-	{ 
+	{
 		SAFE_RELEASE(vertex_buffer);
 		SAFE_RELEASE(index_buffer);
 		SAFE_RELEASE(mtl_buffer);
@@ -84,7 +76,7 @@ public:
 class QuadModel : public Model
 {
 	unsigned nbr_indices = 0;
-	
+
 
 public:
 
@@ -92,7 +84,7 @@ public:
 		ID3D11Device* dx3ddevice,
 		ID3D11DeviceContext* dx3ddevice_context);
 
-	
+
 
 	virtual void Render();
 
